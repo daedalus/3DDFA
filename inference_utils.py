@@ -12,9 +12,7 @@ from ddfa_utils import reconstruct_vertex
 def get_suffix(filename):
     """a.jpg -> jpg"""
     pos = filename.rfind('.')
-    if pos == -1:
-        return ''
-    return filename[pos:]
+    return '' if pos == -1 else filename[pos:]
 
 
 def crop_img(img, roi_box):
@@ -91,13 +89,13 @@ def dump_to_ply(vertex, tri, wfp):
             f.write('{:.4f} {:.4f} {:.4f}\n'.format(x, y, z))
         for i in range(n_face):
             idx1, idx2, idx3 = tri[:, i]
-            f.write('3 {} {} {}\n'.format(idx1 - 1, idx2 - 1, idx3 - 1))
-    print('Dump tp {}'.format(wfp))
+            f.write(f'3 {idx1 - 1} {idx2 - 1} {idx3 - 1}\n')
+    print(f'Dump tp {wfp}')
 
 
 def dump_vertex(vertex, wfp):
     sio.savemat(wfp, {'vertex': vertex})
-    print('Dump tp {}'.format(wfp))
+    print(f'Dump tp {wfp}')
 
 
 def _predict_vertices(param, roi_box, dense):
@@ -127,7 +125,7 @@ def draw_landmarks(img, pts, style='fancy', wfp=None, show_flg=False, **kwargs):
     plt.figure(figsize=(12, 8))
     plt.imshow(img[:, :, ::-1])
 
-    if not type(pts) in [tuple, list]:
+    if type(pts) not in [tuple, list]:
         pts = [pts]
     for i in range(len(pts)):
         if style == 'simple':
@@ -162,7 +160,7 @@ def draw_landmarks(img, pts, style='fancy', wfp=None, show_flg=False, **kwargs):
     plt.tight_layout()
     if wfp is not None:
         plt.savefig(wfp, dpi=200, bbox_inches='tight', pad_inches=0, transparent=True)
-        print('Save visualization result to {}'.format(wfp))
+        print(f'Save visualization result to {wfp}')
     if show_flg:
         plt.show()
 

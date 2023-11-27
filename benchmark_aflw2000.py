@@ -95,8 +95,7 @@ def calc_nme(pts68_fit_all, option='ori'):
         nme = dis / llength
         nme_list.append(nme)
 
-    nme_list = np.array(nme_list, dtype=np.float32)
-    return nme_list
+    return np.array(nme_list, dtype=np.float32)
 
 
 def main():

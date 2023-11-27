@@ -57,9 +57,9 @@ def calc_nme(pts68_fit_all):
     ind_68to21 = [[18], [20], [22], [23], [25], [27], [37], [37, 38, 39, 40, 41, 42], [40], [43],
                   [43, 44, 45, 46, 47, 48],
                   [46], [3], [32], [31], [36], [15], [49], [61, 62, 63, 64, 65, 66, 67, 68], [55], [9]]
-    for i in range(len(ind_68to21)):
-        for j in range(len(ind_68to21[i])):
-            ind_68to21[i][j] -= 1
+    for item in ind_68to21:
+        for j in range(len(item)):
+            item[j] -= 1
 
     nme_list = []
 

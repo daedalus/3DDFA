@@ -22,11 +22,9 @@ def reconstruct_vertex(param, whitening=True, dense=False):
     if len(param) == 12:
         param = np.concatenate((param, [0] * 50))
     if whitening:
-        if len(param) == 62:
-            param = param * param_std + param_mean
-        else:
+        if len(param) != 62:
             param = np.concatenate((param[:11], [0], param[11:]))
-            param = param * param_std + param_mean
+        param = param * param_std + param_mean
     p_ = param[:12].reshape(3, -1)
     p = p_[:, :3]
     offset = p_[:, -1].reshape(3, 1)
@@ -36,15 +34,12 @@ def reconstruct_vertex(param, whitening=True, dense=False):
     if dense:
         vertex = p @ (u + w_shp @ alpha_shp + w_exp @ alpha_exp).reshape(3, -1, order='F') + offset
 
-        # transform to image coordinate space
-        vertex[1, :] = std_size + 1 - vertex[1, :]
     else:
         """For 68 pts"""
         vertex = p @ (u_base + w_shp_base @ alpha_shp + w_exp_base @ alpha_exp).reshape(3, -1, order='F') + offset
 
-        # transform to image coordinate space
-        vertex[1, :] = std_size + 1 - vertex[1, :]
-
+    # transform to image coordinate space
+    vertex[1, :] = std_size + 1 - vertex[1, :]
     return vertex
 
 
@@ -97,7 +92,7 @@ class ToTensorGjz(object):
             return img.float()
 
     def __repr__(self):
-        return self.__class__.__name__ + '()'
+        return f'{self.__class__.__name__}()'
 
 
 class NormalizeGjz(object):
@@ -119,9 +114,7 @@ class DDFADataset(data.Dataset):
         self.img_loader = img_loader
 
     def _target_loader(self, index):
-        target = self.params[index]
-
-        return target
+        return self.params[index]
 
     def __getitem__(self, index):
         path = osp.join(self.root, self.lines[index])

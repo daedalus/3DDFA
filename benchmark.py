@@ -38,7 +38,7 @@ def extract_param(checkpoint_fp, root='', filelists=None, arch='mobilenet_1', nu
     end = time.time()
     outputs = []
     with torch.no_grad():
-        for _, inputs in enumerate(data_loader):
+        for inputs in data_loader:
             inputs = inputs.cuda()
             output = model(inputs)
 

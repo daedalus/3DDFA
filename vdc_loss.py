@@ -52,22 +52,21 @@ class VDCLoss(nn.Module):
 
     def forward_all(self, input, target):
         (p, offset, alpha_shp, alpha_exp), (pg, offsetg, alpha_shpg, alpha_expg) \
-            = self.reconstruct_and_parse(input, target)
+                = self.reconstruct_and_parse(input, target)
 
         N = input.shape[0]
         offset[:, -1] = offsetg[:, -1]
         gt_vertex = pg @ (self.u + self.w_shp @ alpha_shpg + self.w_exp @ alpha_expg) \
-            .view(N, -1, 3).permute(0, 2, 1) + offsetg
+                .view(N, -1, 3).permute(0, 2, 1) + offsetg
         vertex = p @ (self.u + self.w_shp @ alpha_shp + self.w_exp @ alpha_exp) \
-            .view(N, -1, 3).permute(0, 2, 1) + offset
+                .view(N, -1, 3).permute(0, 2, 1) + offset
 
         diff = (gt_vertex - vertex) ** 2
-        loss = torch.mean(diff)
-        return loss
+        return torch.mean(diff)
 
     def forward_resample(self, input, target, resample_num=132):
         (p, offset, alpha_shp, alpha_exp), (pg, offsetg, alpha_shpg, alpha_expg) \
-            = self.reconstruct_and_parse(input, target)
+                = self.reconstruct_and_parse(input, target)
 
         # resample index
         index = torch.randperm(self.w_shp_length)[:resample_num].reshape(-1, 1)
@@ -81,12 +80,11 @@ class VDCLoss(nn.Module):
 
         N = input.shape[0]
         gt_vertex = pg @ (u_base + w_shp_base @ alpha_shpg + w_exp_base @ alpha_expg) \
-            .view(N, -1, 3).permute(0, 2, 1) + offsetg
+                .view(N, -1, 3).permute(0, 2, 1) + offsetg
         vertex = p @ (u_base + w_shp_base @ alpha_shp + w_exp_base @ alpha_exp) \
-            .view(N, -1, 3).permute(0, 2, 1) + offset
+                .view(N, -1, 3).permute(0, 2, 1) + offset
         diff = (gt_vertex - vertex) ** 2
-        loss = torch.mean(diff)
-        return loss
+        return torch.mean(diff)
 
     def forward(self, input, target):
         if self.opt_style == 'all':
@@ -97,5 +95,3 @@ class VDCLoss(nn.Module):
             raise Exception(f'Unknown opt style: f{opt_style}')
 
 
-if __name__ == '__main__':
-    pass

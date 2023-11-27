@@ -118,13 +118,10 @@ class WPDCLoss(nn.Module):
         return weights
 
     def forward(self, input, target, weights_scale=10):
-        if self.opt_style == 'resample':
-            weights = self._calc_weights_resample(input, target)
-            loss = weights * (input - target) ** 2
-            return loss.mean()
-        else:
+        if self.opt_style != 'resample':
             raise Exception(f'Unknown opt style: {self.opt_style}')
+        weights = self._calc_weights_resample(input, target)
+        loss = weights * (input - target) ** 2
+        return loss.mean()
 
 
-if __name__ == '__main__':
-    pass

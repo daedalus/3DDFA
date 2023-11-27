@@ -80,7 +80,7 @@ def parse_args():
 
 def print_args(args):
     for arg in vars(args):
-        s = arg + ': ' + str(getattr(args, arg))
+        s = f'{arg}: {str(getattr(args, arg))}'
         logging.info(s)
 
 
@@ -161,7 +161,7 @@ def validate(val_loader, model, criterion, epoch):
     end = time.time()
     with torch.no_grad():
         losses = []
-        for i, (input, target) in enumerate(val_loader):
+        for input, target in val_loader:
             # compute output
             target.requires_grad = False
             target = target.cuda(non_blocking=True)

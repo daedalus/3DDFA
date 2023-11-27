@@ -26,10 +26,7 @@ class DepthWiseBlock(nn.Module):
         self.bn_dw = nn.BatchNorm2d(inplanes)
         self.conv_sep = nn.Conv2d(inplanes, planes, kernel_size=1, stride=1, padding=0, bias=False)
         self.bn_sep = nn.BatchNorm2d(planes)
-        if prelu:
-            self.relu = nn.PReLU()
-        else:
-            self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.PReLU() if prelu else nn.ReLU(inplace=True)
 
     def forward(self, x):
         out = self.conv_dw(x)
@@ -57,11 +54,7 @@ class MobileNet(nn.Module):
                                bias=False)
 
         self.bn1 = nn.BatchNorm2d(int(32 * widen_factor))
-        if prelu:
-            self.relu = nn.PReLU()
-        else:
-            self.relu = nn.ReLU(inplace=True)
-
+        self.relu = nn.PReLU() if prelu else nn.ReLU(inplace=True)
         self.dw2_1 = block(32 * widen_factor, 64 * widen_factor, prelu=prelu)
         self.dw2_2 = block(64 * widen_factor, 128 * widen_factor, stride=2, prelu=prelu)
 
@@ -125,30 +118,34 @@ def mobilenet(widen_factor=1.0, num_classes=1000):
     widen_factor=0.5  for mobilenet_05
     widen_factor=0.25 for mobilenet_025
     """
-    model = MobileNet(widen_factor=widen_factor, num_classes=num_classes)
-    return model
+    return MobileNet(widen_factor=widen_factor, num_classes=num_classes)
 
 
 def mobilenet_2(num_classes=62, input_channel=3):
-    model = MobileNet(widen_factor=2.0, num_classes=num_classes, input_channel=input_channel)
-    return model
+    return MobileNet(
+        widen_factor=2.0, num_classes=num_classes, input_channel=input_channel
+    )
 
 
 def mobilenet_1(num_classes=62, input_channel=3):
-    model = MobileNet(widen_factor=1.0, num_classes=num_classes, input_channel=input_channel)
-    return model
+    return MobileNet(
+        widen_factor=1.0, num_classes=num_classes, input_channel=input_channel
+    )
 
 
 def mobilenet_075(num_classes=62, input_channel=3):
-    model = MobileNet(widen_factor=0.75, num_classes=num_classes, input_channel=input_channel)
-    return model
+    return MobileNet(
+        widen_factor=0.75, num_classes=num_classes, input_channel=input_channel
+    )
 
 
 def mobilenet_05(num_classes=62, input_channel=3):
-    model = MobileNet(widen_factor=0.5, num_classes=num_classes, input_channel=input_channel)
-    return model
+    return MobileNet(
+        widen_factor=0.5, num_classes=num_classes, input_channel=input_channel
+    )
 
 
 def mobilenet_025(num_classes=62, input_channel=3):
-    model = MobileNet(widen_factor=0.25, num_classes=num_classes, input_channel=input_channel)
-    return model
+    return MobileNet(
+        widen_factor=0.25, num_classes=num_classes, input_channel=input_channel
+    )

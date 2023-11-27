@@ -53,14 +53,10 @@ def main(args):
     tri = sio.loadmat('visualize/tri.mat')['tri']
     for img_fp in args.files:
         img_ori = cv2.imread(img_fp)
-        if args.dlib_bbox:
-            rects = face_detector(img_ori, 1)
-        else:
-            rects = []
-
+        rects = face_detector(img_ori, 1) if args.dlib_bbox else []
         if len(rects) == 0:
             rects = dlib.rectangles()
-            rect_fp = img_fp + '.bbox'
+            rect_fp = f'{img_fp}.bbox'
             lines = open(rect_fp).read().strip().split('\n')[1:]
             for l in lines:
                 l, r, t, b = [int(_) for _ in l.split(' ')[1:]]
@@ -69,9 +65,8 @@ def main(args):
 
         pts_dlib = []
         pts_res = []
-        ind = 0
         suffix = get_suffix(img_fp)
-        for rect in rects:
+        for ind, rect in enumerate(rects):
             # landmark & crop
             pts = face_regressor(img_ori, rect).parts()
             pts = np.array([[pt.x, pt.y] for pt in pts]).T
@@ -112,19 +107,18 @@ def main(args):
             if args.dump_ply or args.dump_vertex:
                 vertices = predict_dense(param, roi_box)
             if args.dump_ply:
-                dump_to_ply(vertices, tri, '{}_{}.ply'.format(img_fp.replace(suffix, ''), ind))
+                dump_to_ply(vertices, tri, f"{img_fp.replace(suffix, '')}_{ind}.ply")
             if args.dump_vertex:
-                dump_vertex(vertices, '{}_{}.mat'.format(img_fp.replace(suffix, ''), ind))
+                dump_vertex(vertices, f"{img_fp.replace(suffix, '')}_{ind}.mat")
             if args.dump_pts:
-                wfp = '{}_{}.txt'.format(img_fp.replace(suffix, ''), ind)
+                wfp = f"{img_fp.replace(suffix, '')}_{ind}.txt"
                 np.savetxt(wfp, pts68, fmt='%.3f')
-                print('Save 68 3d landmarks to {}'.format(wfp))
+                print(f'Save 68 3d landmarks to {wfp}')
             if args.dump_roi_box:
-                wfp = '{}_{}.roibox'.format(img_fp.replace(suffix, ''), ind)
+                wfp = f"{img_fp.replace(suffix, '')}_{ind}.roibox"
                 np.savetxt(wfp, roi_box, fmt='%.3f')
-                print('Save roi box to {}'.format(wfp))
+                print(f'Save roi box to {wfp}')
 
-            ind += 1
         if args.dump_res:
             draw_landmarks(img_ori, pts_res, wfp=img_fp.replace(suffix, '_3DDFA.jpg'), show_flg=args.show_flg)
 
